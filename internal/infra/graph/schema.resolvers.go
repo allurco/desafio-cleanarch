@@ -31,7 +31,7 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 }
 
 // Order implements QueryResolver.
-func (q *queryResolver) Order(ctx context.Context, input *model.OrderListInput) ([]*model.Order, error) {
+func (q *queryResolver) ListOrders(ctx context.Context, input *model.OrderListInput) ([]*model.Order, error) {
 
 	output, err := q.ListOrdersUseCase.ListOrders(*input.Limit, *input.Page, *input.Sort)
 	if err != nil {

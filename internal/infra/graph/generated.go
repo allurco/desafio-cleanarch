@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Order func(childComplexity int, input *model.OrderListInput) int
+		ListOrders func(childComplexity int, input *model.OrderListInput) int
 	}
 }
 
@@ -67,7 +67,7 @@ type MutationResolver interface {
 	CreateOrder(ctx context.Context, input *model.OrderInput) (*model.Order, error)
 }
 type QueryResolver interface {
-	Order(ctx context.Context, input *model.OrderListInput) ([]*model.Order, error)
+	ListOrders(ctx context.Context, input *model.OrderListInput) ([]*model.Order, error)
 }
 
 type executableSchema struct {
@@ -129,17 +129,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Order.Tax(childComplexity), true
 
-	case "Query.order":
-		if e.complexity.Query.Order == nil {
+	case "Query.listOrders":
+		if e.complexity.Query.ListOrders == nil {
 			break
 		}
 
-		args, err := ec.field_Query_order_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_listOrders_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Order(childComplexity, args["input"].(*model.OrderListInput)), true
+		return e.complexity.Query.ListOrders(childComplexity, args["input"].(*model.OrderListInput)), true
 
 	}
 	return 0, false
@@ -297,7 +297,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_order_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_listOrders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *model.OrderListInput
@@ -588,8 +588,8 @@ func (ec *executionContext) fieldContext_Order_FinalPrice(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_order(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_order(ctx, field)
+func (ec *executionContext) _Query_listOrders(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_listOrders(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -602,7 +602,7 @@ func (ec *executionContext) _Query_order(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Order(rctx, fc.Args["input"].(*model.OrderListInput))
+		return ec.resolvers.Query().ListOrders(rctx, fc.Args["input"].(*model.OrderListInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -619,7 +619,7 @@ func (ec *executionContext) _Query_order(ctx context.Context, field graphql.Coll
 	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋallurcoᚋdesafioᚑcleanarchᚋinternalᚋinfraᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_order(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_listOrders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -646,7 +646,7 @@ func (ec *executionContext) fieldContext_Query_order(ctx context.Context, field 
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_order_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_listOrders_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2764,7 +2764,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "order":
+		case "listOrders":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -2773,7 +2773,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_order(ctx, field)
+				res = ec._Query_listOrders(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

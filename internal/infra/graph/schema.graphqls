@@ -18,7 +18,7 @@ input OrderListInput {
 }
 
 type Query {
-    order(input: OrderListInput): [Order!]!
+    listOrders(input: OrderListInput): [Order!]!
 }
 
 type Mutation {
