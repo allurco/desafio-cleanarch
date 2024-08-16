@@ -38,7 +38,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderReques
 	}, nil
 }
 
-func (s *OrderService) ListOrders(ctx context.Context, in *pb.ListOrdersRequest) ([]*pb.ListOrdersResponse, error) {
+func (s *OrderService) ListOrders(ctx context.Context, in *pb.ListOrdersRequest) (*pb.ListOrdersResponse, error) {
 
 	page := in.Page
 	limit := in.Limit
@@ -49,14 +49,18 @@ func (s *OrderService) ListOrders(ctx context.Context, in *pb.ListOrdersRequest)
 		return nil, err
 	}
 
-	orderResponse := make([]*pb.ListOrdersResponse, len(orders))
+	ordersSLice := make([]*pb.Order, len(orders))
 	for i, order := range orders {
-		orderResponse[i] = &pb.ListOrdersResponse{
+		ordersSLice[i] = &pb.Order{
 			Id:         order.ID,
 			Price:      float32(order.Price),
 			Tax:        float32(order.Tax),
 			FinalPrice: float32(order.FinalPrice),
 		}
+	}
+
+	orderResponse := &pb.ListOrdersResponse{
+		Orders: ordersSLice,
 	}
 
 	return orderResponse, err
