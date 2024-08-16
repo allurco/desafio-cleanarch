@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"testing"
 
 	"github.com/allurco/desafio-cleanarch/internal/entity"
@@ -48,4 +49,25 @@ func (suite *OrderRepositoryTestSuite) TestGivenAnOrder_WhenSave_ThenShouldSaveO
 	suite.Equal(order.Price, orderResult.Price)
 	suite.Equal(order.Tax, orderResult.Tax)
 	suite.Equal(order.FinalPrice, orderResult.FinalPrice)
+}
+
+func (suite *OrderRepositoryTestSuite) TestListOrder() {
+	repo := NewOrderRepository(suite.Db)
+
+	orderA, err := entity.NewOrder("123", 10.0, 2.0)
+	suite.NoError(err)
+	suite.NoError(orderA.CalculateFinalPrice())
+	err = repo.Save(orderA)
+	suite.NoError(err)
+
+	orderB, err := entity.NewOrder("12343", 10.0, 2.0)
+	suite.NoError(err)
+	suite.NoError(orderB.CalculateFinalPrice())
+	err = repo.Save(orderB)
+	suite.NoError(err)
+
+	orders := repo.List(0, 10, "asc")
+	fmt.Println(orders)
+
+	suite.Equal(len(orders), 2)
 }

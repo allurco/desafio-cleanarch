@@ -2,6 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 
 	"github.com/allurco/desafio-cleanarch/internal/entity"
 )
@@ -33,4 +35,32 @@ func (r *OrderRepository) GetTotal() (int, error) {
 		return 0, err
 	}
 	return total, nil
+}
+
+func (r *OrderRepository) List(page, limit int, sort string) []entity.Order {
+	results := []entity.Order{}
+
+	stmt := fmt.Sprintf("SELECT id, price, tax, final_price FROM orders ORDER BY id %s LIMIT ? OFFSET ?", sort)
+
+	if limit == 0 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	rows, err := r.Db.Query(stmt, limit, offset)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		var result entity.Order
+		err = rows.Scan(&result.ID, &result.Price, &result.Tax, &result.FinalPrice)
+		if err != nil {
+			log.Println(err)
+		}
+		results = append(results, result)
+	}
+
+	return results
 }

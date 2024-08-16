@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/allurco/desafio-cleanarch/internal/entity"
 	"github.com/allurco/desafio-cleanarch/internal/usecase"
@@ -46,4 +47,31 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (h *WebOrderHandler) List(w http.ResponseWriter, r *http.Request) {
+	var page = 1
+	if r.URL.Query().Get("page") != "" {
+		page, _ = strconv.Atoi(r.URL.Query().Get("page"))
+	}
+
+	var limit = 10
+	if r.URL.Query().Get("limit") != "" {
+		limit, _ = strconv.Atoi(r.URL.Query().Get("limit"))
+	}
+	sort := r.URL.Query().Get("sort")
+
+	listOrders := usecase.NewListOrdersUseCase(h.OrderRepository)
+
+	orders, err := listOrders.ListOrders(limit, page, sort)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	err = json.NewEncoder(w).Encode(orders)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 }

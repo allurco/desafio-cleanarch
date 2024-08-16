@@ -30,7 +30,32 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 	}, nil
 }
 
+// Order implements QueryResolver.
+func (q *queryResolver) Order(ctx context.Context, input *model.OrderListInput) ([]*model.Order, error) {
+
+	output, err := q.ListOrdersUseCase.ListOrders(*input.Limit, *input.Page, *input.Sort)
+	if err != nil {
+		return nil, err
+	}
+
+	graphOutput := make([]*model.Order, len(output))
+
+	for i, order := range output {
+		graphOutput[i] = &model.Order{
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		}
+	}
+
+	return graphOutput, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
