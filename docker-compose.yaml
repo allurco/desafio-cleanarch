@@ -13,6 +13,12 @@ services:
       - 33306:3306
     volumes:
       - .docker/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 0s
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -24,3 +30,15 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  migrate:
+    image: migrate/migrate
+    restart: on-failure:10
+    volumes:
+      - ./migrations:/migrations
+    command: ["-path", "/migrations", "-database",  "mysql://root:root@(mysql:3306)/orders", "-verbose", "up"]
+    links: 
+      - mysql:mysql
+    depends_on:
+      mysql:
+        condition: service_healthy
