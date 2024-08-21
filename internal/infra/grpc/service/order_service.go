@@ -40,9 +40,15 @@ func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderReques
 
 func (s *OrderService) ListOrders(ctx context.Context, in *pb.ListOrdersRequest) (*pb.ListOrdersResponse, error) {
 
-	page := in.Page
-	limit := in.Limit
-	sort := in.Sort
+	page := int64(1)
+	limit := int64(10)
+	sort := "asc"
+
+	if in != nil {
+		page = in.Page
+		limit = in.Limit
+		sort = in.Sort
+	}
 
 	orders, err := s.ListOrdersUseCase.ListOrders(int(limit), int(page), sort)
 	if err != nil {

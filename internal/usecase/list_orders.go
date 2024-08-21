@@ -21,7 +21,7 @@ func NewListOrdersUseCase(orderRepository entity.OrderRepositoryInterface) *List
 	}
 }
 
-func (l *ListOrdersUseCase) ListOrders(limit, page int, sort string) ([]OrderListOutputDTO, error) {
+func (l *ListOrdersUseCase) ListOrders(limit int, page int, sort string) ([]OrderListOutputDTO, error) {
 	orders := l.OrderRepository.List(page, limit, sort)
 	orderResponse := make([]OrderListOutputDTO, len(orders))
 	for i, order := range orders {
